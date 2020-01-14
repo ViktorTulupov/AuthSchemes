@@ -6,15 +6,6 @@ namespace AuthenticationService.Managers
 {
     public class DBManager : IDBManager
     {
-        //private readonly string _connectionString;
-
-        //public DBManager(string connectionString)
-        //{
-        //    _connectionString = connectionString;
-        //}
-
-        //private SqlConnection CreateConnection() => new SqlConnection(_connectionString);
-
         public List<User> GetUsers()
         {
             return new List<User>
@@ -22,14 +13,14 @@ namespace AuthenticationService.Managers
                 new User
                 {
                     Login = "User",
-                    Password = Guid.NewGuid().ToString(),
+                    Password = "XXXxloJGEk2KjFz28cMXvg==",
                     Role = "User"
 
                 },
                 new User
                 {
                     Login = "Admin",
-                    Password = Guid.NewGuid().ToString(),
+                    Password = "fSNlrz2ZHEmZdAB4xMQS0Q==",
                     Role = "Admin"
                 }
             };

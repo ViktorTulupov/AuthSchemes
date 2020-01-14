@@ -1,19 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 using AuthorizationService.Extensions;
 using AuthorizationService.Filters;
 using AuthorizationService.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 
 namespace AuthorizationService
 {
@@ -35,11 +28,56 @@ namespace AuthorizationService
                 .AddBasicAuthentication<AuthenticationService>(options => { options.MethodName = Enums.AuthenticationSchemes.Basic; })
                 .AddHMACAuthentication<AuthenticationService>(options => { options.MethodName = Enums.AuthenticationSchemes.HMAC; })
                 .AddBeareruthentication<AuthenticationService>(options => { options.MethodName = Enums.AuthenticationSchemes.Bearer; });
-            //services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            //services.AddHttpClient("extendedhandlerlifetime").SetHandlerLifetime(TimeSpan.FromMinutes(5));
             services.AddHttpClient<IAuthenticationService, AuthenticationService>();
             services.Configure<Settings>(Configuration);
             services.AddMvc(options => options.Filters.Add(typeof(GlobalExceptionFilter)));
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "API",
+                    Description = "API with ASP.NET Core 3.0",
+                    Contact = new OpenApiContact()
+                    {
+                        Name = "Viktor Tulupov",
+                        Email = "v.tulupov.personal@gmail.com",
+                    },
+                });
+                c.AddSecurityDefinition("basicAuth", new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.Http,
+                    In = ParameterLocation.Header,
+                    Scheme = "basic"
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "basicAuth" }
+                        },
+                        new string[]{}
+                    }
+                });
+                c.AddSecurityDefinition("bearerAuth", new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Scheme = "bearer"
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "bearerAuth" }
+                        },
+                        new string[]{}
+                    }
+                });
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -48,15 +86,18 @@ namespace AuthorizationService
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("swagger/v1/swagger.json", "Test API V1");
+                c.RoutePrefix = string.Empty;
+                c.EnableValidator(null);
+            });
             app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync($"AuthorizationService. Current environment is {env.EnvironmentName}");
-                });
             });
         }
     }

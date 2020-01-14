@@ -120,14 +120,14 @@ namespace AuthenticationService.Services
             var user = GetUser(login);
             var timeStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             var hash = ComputeHash(user.Login, user.Password, timeStamp.ToString());
-            return hash;
+            return $"{user.Login}:{hash}:{timeStamp}";
         }
 
         public User BearerAuthenticate(string token)
         {
             var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
             var jwtSecurityToken = jwtSecurityTokenHandler.ReadToken(token) as JwtSecurityToken;
-            var login = jwtSecurityToken?.Claims?.FirstOrDefault(claim => claim.Type == "user")?.Value;
+            var login = jwtSecurityToken?.Claims?.FirstOrDefault(claim => claim.Type == ClaimTypes.Name)?.Value;
             var user = GetUser(login);
             TokenValidate(token, user.Password);
             return user;

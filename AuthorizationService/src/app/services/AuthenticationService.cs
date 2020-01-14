@@ -19,18 +19,6 @@ namespace AuthorizationService.Services
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         }
 
-        //private Task<string> ExecuteRequest(HttpRequestMessage requestMessage)
-        //{
-        //    var response = _httpClient.SendAsync(requestMessage).Result;
-        //    if (response.IsSuccessStatusCode)
-        //    {
-        //        var result = response.Content.ReadAsStringAsync().Result;
-        //        return Task.FromResult(result);
-        //    }
-
-        //    return Task.FromResult(string.Empty);
-        //}
-
         public async Task<User> Authentication(AuthenticationOptions options, AuthenticationParameters parameters)
         {
             string requestUri = $"{_settings.Value.AuthenticationServiceUrl}{options.MethodName}";
@@ -40,13 +28,5 @@ namespace AuthorizationService.Services
 
             return JsonConvert.DeserializeObject<User>(jsonResponse);
         }
-
-        //public Task<string> GetUserDataByToken(AuthenticationOptions options, string login, string tokenString)
-        //{
-        //    string requestUri = $"{_settings.Value.AuthenticationServiceUrl}{options.MethodName}?user={login}";
-        //    var requestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri);
-        //    requestMessage.Headers.Add("token", tokenString);
-        //    return ExecuteRequest(requestMessage);
-        //}
     }
 }

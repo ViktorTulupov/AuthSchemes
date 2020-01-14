@@ -24,15 +24,11 @@ namespace AuthorizationService.Handlers
             _authenticationService = authenticationService;
         }
 
-        /// <summary>
-        /// Авторизация
-        /// </summary>
-        /// <returns></returns>
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             try
             {
-                if (!Request.Headers.ContainsKey("Authorization"))
+               if (!Request.Headers.ContainsKey("Authorization"))
                 {
                     return AuthenticateResult.NoResult();
                 }
@@ -78,6 +74,5 @@ namespace AuthorizationService.Handlers
                 return AuthenticateResult.Fail(e.Message);
             }
         }
-
     }
 }
