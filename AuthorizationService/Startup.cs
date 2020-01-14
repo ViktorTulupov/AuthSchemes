@@ -36,7 +36,7 @@ namespace AuthorizationService
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Version = "v1",
-                    Title = "API",
+                    Title = "AuthorizationService API",
                     Description = "API with ASP.NET Core 3.0",
                     Contact = new OpenApiContact()
                     {
@@ -89,7 +89,7 @@ namespace AuthorizationService
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("swagger/v1/swagger.json", "Test API V1");
+                c.SwaggerEndpoint("swagger/v1/swagger.json", "AuthorizationService API V1");
                 c.RoutePrefix = string.Empty;
                 c.EnableValidator(null);
             });

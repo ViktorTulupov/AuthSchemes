@@ -7,6 +7,7 @@ using AuthenticationService.Filters;
 using AuthenticationService.Services;
 using Microsoft.Extensions.Hosting;
 using AuthenticationService.Managers;
+using Microsoft.OpenApi.Models;
 
 namespace AuthenticationService
 {
@@ -25,9 +26,22 @@ namespace AuthenticationService
             services.Configure<Settings>(Configuration);
             services.AddMvc(options => options.Filters.Add(typeof(GlobalExceptionFilter)));
             services
-                //.AddTransient(_ => new DBManager(Configuration.GetConnectionString("DBConnection")))
                 .AddTransient<IDBManager, DBManager>()
-                .AddTransient<IAuthService, AuthService>();            
+                .AddTransient<IAuthService, AuthService>();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "AuthenticationService API",
+                    Description = "API with ASP.NET Core 3.0",
+                    Contact = new OpenApiContact()
+                    {
+                        Name = "Viktor Tulupov",
+                        Email = "v.tulupov.personal@gmail.com",
+                    },
+                });
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -37,13 +51,20 @@ namespace AuthenticationService
                 app.UseDeveloperExceptionPage();
             }
             app.UseRouting();
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("swagger/v1/swagger.json", "AuthenticationService API V1");
+                c.RoutePrefix = string.Empty;
+                c.EnableValidator(null);
+            });
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync($"AuthenticationService. Current environment is {env.EnvironmentName}");
-                });
+                //endpoints.MapGet("/", async context =>
+                //{
+                //    await context.Response.WriteAsync($"AuthenticationService. Current environment is {env.EnvironmentName}");
+                //});
             });
         }
     }
