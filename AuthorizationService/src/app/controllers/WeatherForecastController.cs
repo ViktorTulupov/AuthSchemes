@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AuthorizationService.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthorizationService.Controllers
@@ -10,6 +11,7 @@ namespace AuthorizationService.Controllers
     [Authorize(AuthenticationSchemes = authenticationSchemes)]
     [ApiController]
     [Route("[controller]")]
+    [ApiExplorerSettings(GroupName = "weather_forecast")]
     public class WeatherForecastController : ControllerBase
     {
         public const string authenticationSchemes = Enums.AuthenticationSchemes.Basic + "," + Enums.AuthenticationSchemes.HMAC + "," + Enums.AuthenticationSchemes.Bearer;
@@ -21,6 +23,9 @@ namespace AuthorizationService.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin, User")]
+        [ProducesResponseType(typeof(IEnumerable<WeatherForecast>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public IEnumerable<WeatherForecast> Get()
         {
             var rng = new Random();

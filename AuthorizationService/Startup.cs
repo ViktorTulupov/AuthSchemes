@@ -33,10 +33,10 @@ namespace AuthorizationService
             services.AddMvc(options => options.Filters.Add(typeof(GlobalExceptionFilter)));
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo
+                c.SwaggerDoc("weather_forecast", new OpenApiInfo
                 {
                     Version = "v1",
-                    Title = "AuthorizationService API",
+                    Title = "Authorization service api",
                     Description = "API with ASP.NET Core 3.0",
                     Contact = new OpenApiContact()
                     {
@@ -86,10 +86,10 @@ namespace AuthorizationService
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseSwagger();
+            app.UseSwagger(c => c.RouteTemplate = "{documentName}/swagger.json");
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("swagger/v1/swagger.json", "AuthorizationService API V1");
+                c.SwaggerEndpoint("/weather_forecast/swagger.json", "Weather Forecast");
                 c.RoutePrefix = string.Empty;
                 c.EnableValidator(null);
             });

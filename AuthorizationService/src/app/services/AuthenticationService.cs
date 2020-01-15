@@ -21,7 +21,7 @@ namespace AuthorizationService.Services
 
         public async Task<User> Authentication(AuthenticationOptions options, AuthenticationParameters parameters)
         {
-            string requestUri = $"{_settings.Value.AuthenticationServiceUrl}{options.MethodName}";
+            string requestUri = $"{_settings.Value.AuthenticationServiceUrl}{options.MethodName}/authenticate";
             var requestContent = new StringContent(JsonConvert.SerializeObject(parameters), Encoding.UTF8, "application/json");
             var response = await _httpClient.PostAsync(requestUri, requestContent).ConfigureAwait(false);
             var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);

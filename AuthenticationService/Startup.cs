@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using AuthenticationService.Filters;
@@ -30,10 +29,32 @@ namespace AuthenticationService
                 .AddTransient<IAuthService, AuthService>();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo
+                c.SwaggerDoc("basic", new OpenApiInfo
                 {
                     Version = "v1",
-                    Title = "AuthenticationService API",
+                    Title = "Basic authentication api",
+                    Description = "API with ASP.NET Core 3.0",
+                    Contact = new OpenApiContact()
+                    {
+                        Name = "Viktor Tulupov",
+                        Email = "v.tulupov.personal@gmail.com",
+                    },
+                });
+                c.SwaggerDoc("hmac", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "HMAC authentication api",
+                    Description = "API with ASP.NET Core 3.0",
+                    Contact = new OpenApiContact()
+                    {
+                        Name = "Viktor Tulupov",
+                        Email = "v.tulupov.personal@gmail.com",
+                    },
+                });
+                c.SwaggerDoc("bearer", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "JWT authentication api",
                     Description = "API with ASP.NET Core 3.0",
                     Contact = new OpenApiContact()
                     {
@@ -51,20 +72,18 @@ namespace AuthenticationService
                 app.UseDeveloperExceptionPage();
             }
             app.UseRouting();
-            app.UseSwagger();
+            app.UseSwagger(c => c.RouteTemplate = "{documentName}/swagger.json");
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("swagger/v1/swagger.json", "AuthenticationService API V1");
+                c.SwaggerEndpoint("/basic/swagger.json", "Basic authentication");
+                c.SwaggerEndpoint("/hmac/swagger.json", "HMAC authentication");
+                c.SwaggerEndpoint("/bearer/swagger.json", "JWT authentication");
                 c.RoutePrefix = string.Empty;
                 c.EnableValidator(null);
             });
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                //endpoints.MapGet("/", async context =>
-                //{
-                //    await context.Response.WriteAsync($"AuthenticationService. Current environment is {env.EnvironmentName}");
-                //});
             });
         }
     }
