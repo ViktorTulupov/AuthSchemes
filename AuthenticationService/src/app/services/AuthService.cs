@@ -7,26 +7,26 @@ using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using AuthenticationService.Models;
-using AuthenticationService.Managers;
 using System.Security.Claims;
+using AuthenticationService.Repositories;
 
 namespace AuthenticationService.Services
 {
     public class AuthService : IAuthService
     {
         private readonly IOptions<Settings> _settings;
-        private readonly IDBManager _manager;
+        private readonly IRepository<User> _repository;
 
-        public AuthService(IOptions<Settings> settings, IDBManager manager)
+        public AuthService(IOptions<Settings> settings, IRepository<User> repository)
         {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
+            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
         private User GetUser(string login)
         {
-            var users = _manager.GetUsers();
-            var user = users.FirstOrDefault(u => u.Login == login);
+            var users = _repository.GetAll();
+            var user = users.FirstOrDefault(u => u.Login.Equals(login, StringComparison.InvariantCultureIgnoreCase));
 
             if (user == null)
             {

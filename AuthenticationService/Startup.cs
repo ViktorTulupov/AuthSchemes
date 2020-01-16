@@ -5,8 +5,10 @@ using Microsoft.Extensions.DependencyInjection;
 using AuthenticationService.Filters;
 using AuthenticationService.Services;
 using Microsoft.Extensions.Hosting;
-using AuthenticationService.Managers;
 using Microsoft.OpenApi.Models;
+using AuthenticationService.Repositories;
+using AuthenticationService.Models;
+using AuthenticationService.Contexts;
 
 namespace AuthenticationService
 {
@@ -25,7 +27,8 @@ namespace AuthenticationService
             services.Configure<Settings>(Configuration);
             services.AddMvc(options => options.Filters.Add(typeof(GlobalExceptionFilter)));
             services
-                .AddTransient<IDBManager, DBManager>()
+                .AddTransient(_ => new UserContext())
+                .AddTransient<IRepository<User>, UserRepository>()
                 .AddTransient<IAuthService, AuthService>();
             services.AddSwaggerGen(c =>
             {
